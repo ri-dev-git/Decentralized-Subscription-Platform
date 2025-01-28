@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@metamask/providers": "^19.0.0",
     "decentralized-subscription-platform": "file:",
     "ethers": "^6.13.5",
     "next": "15.1.6",
