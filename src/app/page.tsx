@@ -83,7 +83,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
+    <div className="min-h-screen bg-black-100 flex flex-col items-center p-6">
       <h1 className="text-3xl font-bold mb-4 text-center">Decentralized Subscription Platform</h1>
       {walletAddress ? (
         <p className="text-green-600">Connected Wallet: {walletAddress}</p>
