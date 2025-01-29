@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-const contractABI = [
+export const contractABI =  [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -70,6 +70,30 @@ const contractABI = [
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "resolution",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "devices",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "simultaneousStreams",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "downloadDevices",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "creator",
         "type": "address"
@@ -120,11 +144,92 @@ const contractABI = [
         "internalType": "uint256",
         "name": "duration",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "resolution",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "devices",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "simultaneousStreams",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "downloadDevices",
+        "type": "uint256"
       }
     ],
     "name": "createPlan",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "planId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPlan",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "duration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "resolution",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "devices",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "simultaneousStreams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "downloadDevices",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct SubscriptionPlatform.Plan",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -195,6 +300,26 @@ const contractABI = [
       {
         "internalType": "uint256",
         "name": "duration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "resolution",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "devices",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "simultaneousStreams",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "downloadDevices",
         "type": "uint256"
       },
       {
@@ -270,7 +395,7 @@ const contractABI = [
   }
 ];
 
-const contractAddress =  "0x74B9715022574Fc54A2f9c8aa3bC84c85f3A1Dc7";
+export const contractAddress =  "0x3e251cCCDa504D4F25792C505d8827922E37C3E1";
 
 export const getContract = (signerOrProvider) => {
   return new ethers.Contract(contractAddress, contractABI, signerOrProvider);
