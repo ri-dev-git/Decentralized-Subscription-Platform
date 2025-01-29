@@ -2,11 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getContract,contractABI,contractAddress } from "../../utils/contract";
-import { ethers, Eip1193Provider } from "ethers";
+import { getContract } from "../../utils/contract";
+import { ethers } from "ethers";
+
+interface Subscription {
+  planId: number;
+  startDate: Date;
+  endDate: Date;
+  plan: {
+    resolution: string;
+    devices: number;
+    simultaneousStreams: number;
+    downloadDevices: number;
+  };
+}
 
 const Dashboard = () => {
-  const [subscription, setSubscription] = useState(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -33,7 +45,7 @@ const Dashboard = () => {
 
         // Create contract instance
        const provider = new ethers.BrowserProvider(window.ethereum);
-       console.log(contractABI)
+   
         const contract =getContract(provider);
         
         const address = accounts[0];
@@ -48,17 +60,19 @@ const Dashboard = () => {
         const subscription = await contract.subscriptions(address);
         const plan = await contract.getPlan(subscription.planId);
         
-        setSubscription({
-          planId: subscription.planId,
-          startDate: new Date(Number(subscription.startDate) * 1000),
-          endDate: new Date(Number(subscription.endDate) * 1000),
-          plan: {
-            resolution: plan.resolution,
-            devices: plan.devices,
-            simultaneousStreams: plan.simultaneousStreams,
-            downloadDevices: plan.downloadDevices
-          }
-        });
+        if (subscription && plan) {
+          setSubscription({
+            planId: Number(subscription.planId),
+            startDate: new Date(Number(subscription.startDate) * 1000),
+            endDate: new Date(Number(subscription.endDate) * 1000),
+            plan: {
+              resolution: plan.resolution,
+              devices: Number(plan.devices),
+              simultaneousStreams: Number(plan.simultaneousStreams),
+              downloadDevices: Number(plan.downloadDevices)
+            }
+          });
+        }
         
       } catch (err) {
         console.error('Error checking subscription:', err);
