@@ -62,10 +62,14 @@ export default function Home() {
   // Check subscription status
   const checkSubscription = async (address: string) => {
     try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      if (!window.ethereum) {
+        throw new Error("Ethereum provider not found");
+      }
+      
+      const provider = new ethers.BrowserProvider(window.ethereum as Eip1193Provider);
       const contract = getContract(provider);
       const isSubscribed = await contract.isSubscriber(address);
-      
+  
       if (isSubscribed) {
         router.push('/dashboard');
       }
