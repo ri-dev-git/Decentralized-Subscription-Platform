@@ -395,7 +395,7 @@ export const contractABI =  [
   }
 ];
 
-export const contractAddress =  "0x3e251cCCDa504D4F25792C505d8827922E37C3E1";
+export const contractAddress ="0x3e251cCCDa504D4F25792C505d8827922E37C3E1";
 
 export const getContract = (signerOrProvider) => {
   return new ethers.Contract(contractAddress, contractABI, signerOrProvider);

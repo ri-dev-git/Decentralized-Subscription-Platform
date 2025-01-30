@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { getContract } from "../../utils/contract";
 import { ethers } from "ethers";
+
+// Extend the type to include the `on` method
+interface EthereumProvider {
+  on?: (event: string, callback: (...args: any[]) => void) => void;
+  removeListener?: (event: string, callback: (...args: any[]) => void) => void;
+}
 
 interface Subscription {
   planId: number;
@@ -11,76 +17,86 @@ interface Subscription {
   endDate: Date;
   plan: {
     resolution: string;
-    devices: number;
+    devices: string;
     simultaneousStreams: number;
     downloadDevices: number;
   };
 }
 
-const Dashboard = () => {
+export default function Dashboard() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    checkSubscription();
-  }, []);
-
+  // Check subscription status
   const checkSubscription = async () => {
-    if (typeof window !== 'undefined' && window.ethereum) {
+    if (typeof window !== "undefined" && window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_accounts' 
-        });
-        console.log(accounts)
-        
-        if (accounts.length === 0) {
-          router.push('/');
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const contract = getContract(provider);
+        const accounts = await provider.send("eth_accounts", []);
+        const address = accounts[0];
+
+        if (!address) {
+          router.push("/");
           return;
         }
 
-        // Get contract ABI and address (you'll need to provide these)
-        // const contractABI = contractABI;
-        // const contractAddress = contractAddress;
-
-        // Create contract instance
-       const provider = new ethers.BrowserProvider(window.ethereum);
-   
-        const contract =getContract(provider);
-        
-        const address = accounts[0];
         const isSubscribed = await contract.isSubscriber(address);
-        
+
         if (!isSubscribed) {
-          router.push('/');
+          router.push("/subscription");
           return;
         }
 
         // Get subscription details
         const subscription = await contract.subscriptions(address);
-        const plan = await contract.getPlan(subscription.planId);
-        
-        if (subscription && plan) {
-          setSubscription({
-            planId: Number(subscription.planId),
-            startDate: new Date(Number(subscription.startDate) * 1000),
-            endDate: new Date(Number(subscription.endDate) * 1000),
-            plan: {
-              resolution: plan.resolution,
-              devices: Number(plan.devices),
-              simultaneousStreams: Number(plan.simultaneousStreams),
-              downloadDevices: Number(plan.downloadDevices)
-            }
-          });
-        }
-        
+        const plan = await contract.plans(subscription.planId);
+
+        setSubscription({
+          planId: Number(subscription.planId),
+          startDate: new Date(Number(subscription.startDate) * 1000),
+          endDate: new Date(Number(subscription.endDate) * 1000),
+          plan: {
+            resolution: plan.resolution,
+            devices: plan.devices,
+            simultaneousStreams: plan.simultaneousStreams,
+            downloadDevices: plan.downloadDevices,
+          },
+        });
       } catch (err) {
-        console.error('Error checking subscription:', err);
-        router.push('/');
+        console.error("Error checking subscription:", err);
+        router.push("/");
+      } finally {
+        setLoading(false);
       }
     }
-    setLoading(false);
   };
+
+  // Listen for account changes
+  useEffect(() => {
+    const ethereum = window.ethereum as EthereumProvider;
+
+    if (ethereum && ethereum.on) {
+      const handleAccountsChanged = (accounts: string[]) => {
+        if (accounts.length > 0) {
+          checkSubscription();
+        } else {
+          router.push("/");
+        }
+      };
+
+      ethereum.on("accountsChanged", handleAccountsChanged);
+
+      return () => {
+        ethereum.removeListener?.("accountsChanged", handleAccountsChanged);
+      };
+    }
+  }, [router]);
+
+  useEffect(() => {
+    checkSubscription();
+  }, []);
 
   if (loading) {
     return (
@@ -125,6 +141,4 @@ const Dashboard = () => {
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}
