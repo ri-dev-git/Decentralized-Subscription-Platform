@@ -16,7 +16,6 @@ interface EthereumProvider {
   removeListener?: (event: string, callback: (...args: any[]) => void) => void;
 }
 
-
 interface Plan {
   id: string;
   price: string;
@@ -150,39 +149,54 @@ export default function Subscription() {
     }
   };
 
+  // Logout functionality
+  const handleLogout = () => {
+    router.push('/');
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold mb-4 text-center">Choose the plan that’s right for you</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {plans.map((plan) => (
-          <div key={plan.id} className="bg-white p-6 rounded-lg shadow-lg flex flex-col">
-            <div className="flex-grow">
-              <h3 className="text-xl font-semibold mb-4">Plan {plan.id}</h3>
-              <p className="text-2xl font-bold mb-4">{plan.price} ETH</p>
-              <ul className="space-y-2">
-                <li>
-                  <strong>Resolution:</strong> {plan.resolution}
-                </li>
-                <li>
-                  <strong>Devices:</strong> {plan.devices}
-                </li>
-                <li>
-                  <strong>Simultaneous Streams:</strong> {plan.simultaneousStreams}
-                </li>
-                <li>
-                  <strong>Download Devices:</strong> {plan.downloadDevices}
-                </li>
-              </ul>
+      <div className="w-full max-w-4xl">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Choose the plan that’s right for you</h1>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Logout
+          </button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {plans.map((plan) => (
+            <div key={plan.id} className="bg-white p-6 rounded-lg shadow-lg flex flex-col">
+              <div className="flex-grow">
+                <h3 className="text-xl font-semibold mb-4">Plan {plan.id}</h3>
+                <p className="text-2xl font-bold mb-4">{plan.price} ETH</p>
+                <ul className="space-y-2">
+                  <li>
+                    <strong>Resolution:</strong> {plan.resolution}
+                  </li>
+                  <li>
+                    <strong>Devices:</strong> {plan.devices}
+                  </li>
+                  <li>
+                    <strong>Simultaneous Streams:</strong> {plan.simultaneousStreams}
+                  </li>
+                  <li>
+                    <strong>Download Devices:</strong> {plan.downloadDevices}
+                  </li>
+                </ul>
+              </div>
+              <button
+                onClick={() => subscribe(plan.id, plan.price)}
+                className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                disabled={loading}
+              >
+                {loading ? "Subscribing..." : "Subscribe"}
+              </button>
             </div>
-            <button
-              onClick={() => subscribe(plan.id, plan.price)}
-              className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              disabled={loading}
-            >
-              {loading ? "Subscribing..." : "Subscribe"}
-            </button>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
