@@ -87,7 +87,8 @@ export default function Home() {
       await checkSubscription(address);
     } catch (err) {
       console.error("Wallet connection failed:", err);
-      alert(err.message || "Failed to connect wallet");
+      const errorMessage = err instanceof Error ? err.message : "Failed to connect wallet";
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
